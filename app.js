@@ -3,6 +3,8 @@ const mongoose = require("mongoose");
 const path = require("path");
 const Campground = require("./models/campgrounds");
 const methodOverride = require("method-override");
+const ejsMate = require("ejs-mate");
+const AppError = require("AppError");
 
 mongoose.connect('mongodb://localhost:27017/yelp-camp',{
     useNewUrlParser: true,
@@ -17,9 +19,15 @@ db.once("open", () => {
     console.log("Database connected");
 });
 
+// Define Express app
 const app = express();
 
+/**
+ * MIDDLEWARES
+ */
+
 app.set('view engine', 'ejs');
+app.engine('ejs', ejsMate);
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({extended: true}));
 app.use(methodOverride('_method'));
@@ -69,6 +77,12 @@ app.put('/campgrounds/:id', async (req, res) => {
     await Campground.findByIdAndUpdate(id, {...req.body.campground});
     res.redirect(`/campgrounds/${id}`);
 }); 
+
+app.delete('/campgrounds/:id', async (req, res) => {
+    const { id } = req.params;
+    await Campground.findByIdAndDelete(id);
+    res.redirect('/campgrounds');
+});
 
 app.listen(3000, () => {
     console.log("App is running!");
