@@ -15,4 +15,4 @@ const CampgroundSchema = new Schema({
     ]
 });
 
-module.exports = mongoose.model('Review', CampgroundSchema);
+module.exports = mongoose.model('Campground', CampgroundSchema);
